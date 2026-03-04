@@ -9,7 +9,7 @@
 
 - **Web Application**: http://localhost:8080/students
 - **API Endpoint**: http://localhost:8080/api/students
-- **Deployed URL** (Lab 5): [URL sẽ được cập nhật sau khi deploy]
+- **Deployed URL** (Lab 5): https://student-management-1zfz.onrender.com/students
 
 ## 🚀 Hướng dẫn chạy dự án
 
