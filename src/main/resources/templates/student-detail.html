@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi Tiết Sinh Viên</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        .student-info { background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .info-row { display: flex; margin-bottom: 15px; }
+        .info-label { font-weight: bold; width: 120px; color: #495057; }
+        .info-value { color: #212529; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin: 5px; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .age-status { padding: 5px 10px; border-radius: 15px; font-weight: bold; }
+        .age-ok { background-color: #d4edda; color: #155724; }
+        .age-warning { background-color: #f8d7da; color: #721c24; }
+        .actions { text-align: center; margin-top: 30px; }
+        /* Modal styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: white; margin: 15% auto; padding: 20px; border-radius: 8px; width: 300px; text-align: center; }
+        .modal-buttons { margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📋 Chi Tiết Sinh Viên</h1>
+    
+    <!-- Hiển thị thông báo -->
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    
+    <div class="student-info">
+        <div class="info-row">
+            <div class="info-label">🆔 Mã số:</div>
+            <div class="info-value" th:text="${student.id}">ID</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">👤 Họ và tên:</div>
+            <div class="info-value" th:text="${student.name}">Tên</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">📧 Email:</div>
+            <div class="info-value" th:text="${student.email}">Email</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">🎂 Tuổi:</div>
+            <div class="info-value" th:text="${student.age}">Tuổi</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">✅ Trạng thái:</div>
+            <div class="info-value">
+                <span th:if="${student.age >= 18}" class="age-status age-ok">Đủ tuổi</span>
+                <span th:if="${student.age < 18}" class="age-status age-warning">Chưa đủ tuổi</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="actions">
+        <a th:href="@{'/students/' + ${student.id} + '/edit'}" class="btn btn-primary">✏️ Chỉnh Sửa</a>
+        <button onclick="showDeleteModal()" class="btn btn-danger">🗑️ Xóa</button>
+        <a href="/students" class="btn btn-secondary">← Quay lại danh sách</a>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3>⚠️ Xác nhận xóa</h3>
+        <p>Bạn có chắc chắn muốn xóa sinh viên này không?</p>
+        <div class="modal-buttons">
+            <form th:action="@{'/students/' + ${student.id} + '/delete'}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger">Xóa</button>
+            </form>
+            <button onclick="hideDeleteModal()" class="btn btn-secondary">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+    
+    function hideDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+    
+    // Đóng modal khi click bên ngoài
+    window.onclick = function(event) {
+        var modal = document.getElementById('deleteModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

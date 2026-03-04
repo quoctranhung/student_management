@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${action == 'add'} ? 'Thêm Sinh Viên Mới' : 'Chỉnh Sửa Sinh Viên'">Form Sinh Viên</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #495057; }
+        input[type="text"], input[type="email"], input[type="number"] { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 2px rgba(0,123,255,0.25); }
+        .btn { padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin: 5px; font-size: 16px; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .actions { text-align: center; margin-top: 30px; }
+        .required { color: #dc3545; }
+        .form-helper { font-size: 14px; color: #6c757d; margin-top: 5px; }
+        .id-field { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        <span th:if="${action == 'add'}">➕ Thêm Sinh Viên Mới</span>
+        <span th:if="${action == 'edit'}">✏️ Chỉnh Sửa Sinh Viên</span>
+    </h1>
+    
+    <!-- Hiển thị lỗi -->
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    
+    <form th:object="${student}" 
+          th:action="${action == 'add'} ? '/students/add' : '/students/' + ${student.id} + '/edit'" 
+          method="post">
+          
+        <div class="form-group">
+            <label for="id">🆔 Mã số sinh viên <span class="required">*</span></label>
+            <input type="text" id="id" th:field="*{id}" 
+                   th:class="${action == 'edit'} ? 'id-field' : ''"
+                   th:readonly="${action == 'edit'}"
+                   placeholder="Ví dụ: SV001, 2023001..." 
+                   required maxlength="50" />
+            <div class="form-helper" th:if="${action == 'edit'}">Mã số không thể thay đổi</div>
+            <div class="form-helper" th:if="${action == 'add'}">Nhập mã số duy nhất cho sinh viên</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="name">👤 Họ và tên <span class="required">*</span></label>
+            <input type="text" id="name" th:field="*{name}" 
+                   placeholder="Ví dụ: Nguyễn Văn A" 
+                   required maxlength="100" />
+            <div class="form-helper">Nhập họ và tên đầy đủ</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">📧 Email <span class="required">*</span></label>
+            <input type="email" id="email" th:field="*{email}" 
+                   placeholder="Ví dụ: nguyenvana@email.com" 
+                   required maxlength="100" />
+            <div class="form-helper">Nhập địa chỉ email hợp lệ</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="age">🎂 Tuổi <span class="required">*</span></label>
+            <input type="number" id="age" th:field="*{age}" 
+                   placeholder="Ví dụ: 20" 
+                   required min="10" max="100" />
+            <div class="form-helper">Nhập tuổi từ 10 đến 100</div>
+        </div>
+        
+        <div class="actions">
+            <button type="submit" 
+                    th:class="${action == 'add'} ? 'btn btn-success' : 'btn btn-primary'">
+                <span th:if="${action == 'add'}">💾 Thêm Mới</span>
+                <span th:if="${action == 'edit'}">💾 Cập Nhật</span>
+            </button>
+            <a href="/students" class="btn btn-secondary">❌ Hủy</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Validation khi submit form
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var id = document.getElementById('id').value.trim();
+        var name = document.getElementById('name').value.trim();
+        var email = document.getElementById('email').value.trim();
+        var age = parseInt(document.getElementById('age').value);
+        
+        if (!id || !name || !email || !age) {
+            alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+            e.preventDefault();
+            return false;
+        }
+        
+        if (age < 10 || age > 100) {
+            alert('Tuổi phải trong khoảng từ 10 đến 100!');
+            e.preventDefault();
+            return false;
+        }
+        
+        // Xác nhận trước khi submit
+        var action = document.querySelector('input[name="action"]') ? 
+                     document.querySelector('input[name="action"]').value : 'add';
+        var message = action === 'add' ? 
+                     'Bạn có chắc chắn muốn thêm sinh viên này?' : 
+                     'Bạn có chắc chắn muốn cập nhật thông tin sinh viên này?';
+        
+        if (!confirm(message)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
+
+</body>
+</html>
